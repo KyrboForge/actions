@@ -12,7 +12,7 @@ App, scoped to the repository running the workflow.
 Configure these values under **KyrboForge → Settings → Secrets and
 variables → Actions** and grant the target repositories access:
 
-- variable `RELEASE_APP_ID` — the GitHub App ID;
+- variable `RELEASE_APP_CLIENT_ID` — the GitHub App client ID;
 - secret `RELEASE_APP_PRIVATE_KEY` — the complete generated PEM private key.
 
 Install the GitHub App on each target repository and add it to the relevant
@@ -21,10 +21,10 @@ ruleset bypass list.
 ### Usage
 
 ```yaml
-- uses: KyrboForge/actions/release-token@v1
+- uses: KyrboForge/actions/release-token@<full-commit-sha>
   id: release-token
   with:
-    app-id: ${{ vars.RELEASE_APP_ID }}
+    client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
     private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
 - uses: actions/checkout@v7
@@ -39,8 +39,7 @@ steps that use it in the same job.
 
 ## Versioning
 
-Consumers should use the stable major tag `v1`. Breaking changes require a
-new major tag.
+Consumers should pin the action to a full commit SHA.
 
 ## License
 

@@ -2,8 +2,8 @@ name: Create release token
 description: Create a short-lived token for the KyrboForge release bot
 
 inputs:
-  app-id:
-    description: GitHub App ID
+  client-id:
+    description: GitHub App client ID
     required: true
   private-key:
     description: GitHub App private key
@@ -17,10 +17,10 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: actions/create-github-app-token@v2
+    - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
       id: token
       with:
-        app-id: ${{ inputs.app-id }}
+        client-id: ${{ inputs.client-id }}
         private-key: ${{ inputs.private-key }}
         owner: ${{ github.repository_owner }}
         repositories: ${{ github.event.repository.name }}
