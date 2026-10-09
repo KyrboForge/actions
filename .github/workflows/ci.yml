@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate composite action
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Validate action metadata and required inputs
+        shell: bash
+        run: |
+          ruby <<'RUBY'
+          require "yaml"
+
+          action = YAML.load_file("release-token/action.yml")
+          abort "Expected composite action" unless action.dig("runs", "using") == "composite"
+
+          steps = action.dig("runs", "steps")
+          abort "Composite action needs at least one step" unless steps.is_a?(Array) && !steps.empty?
+          abort "Invalid composite action step" unless steps.all? { |step| step.is_a?(Hash) && (step.key?("uses") || step.key?("run")) }
+
+          %w[client-id private-key].each do |name|
+            abort "Missing required input: #{name}" unless action.dig("inputs", name, "required") == true
+          end
+
+          abort "Missing token output" unless action.dig("outputs", "token", "value").is_a?(String)
+          RUBY
